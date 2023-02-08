@@ -23,4 +23,14 @@ public class PrimeNumberTest {
         // Then
         Assertions.assertEquals(List.of(2,3,5,7),listOfPremierNumber);
     }
+
+    @Test
+    void test_calculateNPremierNumberWithTwoThreads_donneUnNombre_alorsRetourneLaListeDesNombresPremiersJusquauNombreIdentiqueACelleSansThreads() throws InterruptedException {
+        // When
+        List<Integer> listOfPremierNumber1 = PrimeNumber.calculateNPrimeNumberWithOutThreads(100000000);
+        List<Integer> listOfPremierNumber2 = PrimeNumber.calculateNPrimeNumberWithTwoThreads(100000000);
+
+        // Then
+        Assertions.assertEquals(listOfPremierNumber1,listOfPremierNumber2);
+    }
 }

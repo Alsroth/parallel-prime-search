@@ -5,7 +5,9 @@ import java.util.List;
 
 public class PrimeNumber {
 
-    private static final List<Integer> listOfPrimeNumber = new ArrayList<>();
+    private static final List<Integer> listOfPrimeNumberWithOutThread = new ArrayList<>();
+    private static final List<Integer> listOfPrimeNumberWithThreadPart1 = new ArrayList<>();
+    private static final List<Integer> listOfPrimeNumberWithThreadPart2 = new ArrayList<>();
 
     private PrimeNumber() {}
     private static boolean isPrime(int premierNumber) {
@@ -30,11 +32,13 @@ public class PrimeNumber {
         return true;
     }
 
-    private static void calculatePrimeWithRange(int start, int end) {
+    private static void calculatePrimeWithRange(int start, int end, boolean isFirstPart) {
         for (int i = start; i < end; i++) {
             if (isPrime(i)) {
-                synchronized (listOfPrimeNumber) {
-                    listOfPrimeNumber.add(i);
+                if(isFirstPart) {
+                    listOfPrimeNumberWithThreadPart1.add(i);
+                } else {
+                    listOfPrimeNumberWithThreadPart2.add(i);
                 }
             }
         }
@@ -44,7 +48,7 @@ public class PrimeNumber {
         List<Integer> listOfPrimeNumber = new ArrayList<>();
 
         for (int i = 2; i<n ; i++) {
-            if(isPrime(i)) {
+            if (isPrime(i)) {
                 listOfPrimeNumber.add(i);
             }
         }
@@ -53,13 +57,14 @@ public class PrimeNumber {
     }
 
     public static List<Integer> calculateNPrimeNumberWithTwoThreads(int n) throws InterruptedException {
-        listOfPrimeNumber.clear();
-        Thread t1 = new Thread(() -> calculatePrimeWithRange(2, n / 2));
-        Thread t2 = new Thread(() -> calculatePrimeWithRange(n / 2, n));
+        listOfPrimeNumberWithOutThread.clear();
+        Thread t1 = new Thread(() -> calculatePrimeWithRange(2, n / 2, true));
+        Thread t2 = new Thread(() -> calculatePrimeWithRange(n / 2, n, false));
         t1.start();
         t2.start();
         t1.join();
         t2.join();
-        return listOfPrimeNumber;
+        listOfPrimeNumberWithThreadPart1.addAll(listOfPrimeNumberWithThreadPart2);
+        return listOfPrimeNumberWithThreadPart1;
     }
 }
